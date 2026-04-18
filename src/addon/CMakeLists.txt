@@ -1,4 +1,6 @@
-add_fcitx5_addon(scribe addon.cpp)
+add_fcitx5_addon(scribe)
+
+target_sources(scribe PRIVATE addon.cpp config.cpp factory.cpp)
 
 target_link_libraries(scribe PRIVATE Fcitx5::Core)
 

@@ -2,9 +2,10 @@
 Name=Scribe
 Comment=Bridge for voice input engines
 Category=Module
-Library=scribe
+Library=libscribe
 Type=SharedLibrary
-OnDemand=True
+Configurable=True
+OnDemand=False
 
 [Addon/Dependencies]
-0=core:@FCITX_VERSION@
+0=core:@PROJECT_VERSION@
