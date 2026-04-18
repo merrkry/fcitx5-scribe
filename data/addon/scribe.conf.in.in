@@ -1,0 +1,8 @@
+[Addon]
+Name=Scribe
+Category=Module
+Comment=Voice input bridge
+Library=libscribe
+Type=@FCITX_ADDON_TYPE@
+OnDemand=False
+Configurable=True
