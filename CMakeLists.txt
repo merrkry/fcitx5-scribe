@@ -11,9 +11,21 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 find_package(Fcitx5Core REQUIRED)
 find_package(Fcitx5Utils REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(Protobuf CONFIG REQUIRED)
+find_package(Threads REQUIRED)
+
+find_path(BOOST_INCLUDE_DIR boost/asio.hpp REQUIRED)
 
 include("${Fcitx5Utils_DIR}/Fcitx5Macros.cmake")
+include(CTest)
 
 add_subdirectory(src/addon)
+
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()

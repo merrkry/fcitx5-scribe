@@ -7,3 +7,8 @@
 # Nix
 /result
 /.direnv/
+
+# Python
+__pycache__/
+*_pb2.py
+

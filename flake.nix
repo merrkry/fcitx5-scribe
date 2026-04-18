@@ -22,20 +22,27 @@
         filteredSrc = lib.fileset.toSource {
           root = ./.;
           fileset = lib.fileset.unions [
+            ./data
             ./src
-            ./VERSION
+            ./tests
             ./CMakeLists.txt
+            ./VERSION
           ];
         };
 
         fcitx5-scribe = pkgs.callPackage (
           {
+            boost,
+            catch2_3,
             stdenv,
             cmake,
             ninja,
             pkg-config,
             fcitx5,
+            openssl,
+            protobuf,
             buildType ? "Release",
+            runTests ? true,
           }:
           stdenv.mkDerivation {
             pname = "fcitx5-scribe";
@@ -46,15 +53,28 @@
               cmake
               ninja
               pkg-config
+              protobuf
             ];
 
             buildInputs = [
+              boost
               fcitx5
+              openssl
+              protobuf
+            ]
+            ++ lib.optionals runTests [
+              catch2_3
             ];
 
             cmakeFlags = [
               "-DCMAKE_BUILD_TYPE=${buildType}"
+              "-DBUILD_TESTING=${if runTests then "ON" else "OFF"}"
             ];
+
+            doCheck = runTests;
+            checkPhase = lib.optionalString runTests ''
+              ctest --output-on-failure
+            '';
 
             # TODO: meta
           }
@@ -64,6 +84,7 @@
           addons = [
             (fcitx5-scribe.override {
               buildType = "Debug";
+              runTests = false;
             })
           ];
         };
@@ -71,6 +92,25 @@
       {
         devShells.default = pkgs.mkShell {
           inputsFrom = [ fcitx5-scribe ];
+          packages = with pkgs; [
+            catch2_3
+            python3
+            python3Packages.protobuf
+          ];
+
+          shellHook = ''
+            export FCITX5_SCRIBE_DEBUG_SOCKET_PATH="$PWD/.cache/poc-transcriber.sock"
+            export FCITX5_SCRIBE_DEBUG_AUTH_TOKEN_FILE="$PWD/.cache/scribe-auth-token"
+
+            mkdir -p .cache
+            if [ ! -s "$FCITX5_SCRIBE_DEBUG_AUTH_TOKEN_FILE" ]; then
+              touch "$FCITX5_SCRIBE_DEBUG_AUTH_TOKEN_FILE"
+              tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 16 > "$FCITX5_SCRIBE_DEBUG_AUTH_TOKEN_FILE"
+            fi
+            chmod 600 "$FCITX5_SCRIBE_DEBUG_AUTH_TOKEN_FILE"
+
+            export FCITX5_SCRIBE_DEBUG_AUTH_TOKEN="$(cat "$FCITX5_SCRIBE_DEBUG_AUTH_TOKEN_FILE")"
+          '';
         };
 
         packages = {

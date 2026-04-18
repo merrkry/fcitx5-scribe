@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+// buf:lint:ignore PACKAGE_VERSION_SUFFIX
+package scribe.v0;
+
+message Envelope {
+  oneof payload {
+    ClientHello client_hello = 1;
+    ServerHello server_hello = 2;
+    StartSession start_session = 3;
+    InterruptSession interrupt_session = 4;
+    CommitText commit_text = 5;
+    VadTimeout vad_timeout = 6;
+    Error error = 7;
+  }
+}
+
+message ClientHello {
+  string protocol_version = 1;
+  string client_name = 2;
+  bytes client_nonce = 3;
+}
+
+message ServerHello {
+  string protocol_version = 1;
+  bool accepted = 2;
+  string error_message = 3;
+  bytes server_nonce = 4;
+  // HMAC-SHA256(token, "fcitx5-scribe/v0/server" || client_nonce || server_nonce)
+  bytes proof = 5;
+}
+
+message StartSession {
+  bytes session_id = 1;
+}
+
+enum InterruptReason {
+  INTERRUPT_REASON_UNSPECIFIED = 0;
+  INTERRUPT_REASON_TOGGLE = 1;
+  INTERRUPT_REASON_FOCUS_LOST = 2;
+  INTERRUPT_REASON_FOCUS_CHANGED = 3;
+  INTERRUPT_REASON_INPUT_CONTEXT_DESTROYED = 4;
+  INTERRUPT_REASON_TRANSPORT_FAILURE = 5;
+}
+
+message InterruptSession {
+  bytes session_id = 1;
+  InterruptReason reason = 2;
+}
+
+message CommitText {
+  bytes session_id = 1;
+  uint64 sequence_no = 2;
+  string text = 3;
+}
+
+message VadTimeout {
+  bytes session_id = 1;
+}
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0;
+  ERROR_CODE_AUTHENTICATION_FAILED = 1;
+  ERROR_CODE_INVALID_REQUEST = 2;
+  ERROR_CODE_TRANSCRIBER_INTERNAL = 3;
+  ERROR_CODE_UNAVAILABLE = 4;
+}
+
+message Error {
+  bytes session_id = 1;
+  ErrorCode code = 2;
+  string message = 3;
+}
