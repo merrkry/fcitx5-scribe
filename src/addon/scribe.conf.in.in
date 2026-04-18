@@ -1,0 +1,10 @@
+[Addon]
+Name=Scribe
+Comment=Bridge for voice input engines
+Category=Module
+Library=scribe
+Type=SharedLibrary
+OnDemand=True
+
+[Addon/Dependencies]
+0=core:@FCITX_VERSION@

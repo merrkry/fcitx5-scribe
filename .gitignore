@@ -1,0 +1,9 @@
+/.ref/
+
+# C++
+/build/
+/.cache/
+
+# Nix
+/result
+/.direnv/
