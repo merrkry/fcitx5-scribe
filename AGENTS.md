@@ -20,10 +20,12 @@ Due to the nature of input methods, security considerations should be prioritize
 
 ## Toolchain
 
-- C++23. Follow modern C++ best practices, avoid legacy style.
-- CMake (build should be executed in `build` directory)
-- Nix flake for reproducible packaging and dev environment
-- Run `clang-format -i` on relevant files before considering tasks completed.
+- Follow modern C++ best practices and designs from Rust, avoid legacy styles.
+- CMake build directory is `build`.
+- All toolchain-related commands should be executed with `nix develop -c`.
+- Format, build and run test suite before marking a task as completed.
+  - For C++ files, use `clang-format -i` for formatting.
+- Prefer using `cmake` directly for incremental builds. Avoid calling expensive `nix build` unless explicitly requested.
 
 ## References
 
